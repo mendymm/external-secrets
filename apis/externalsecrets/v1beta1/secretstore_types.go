@@ -114,6 +114,10 @@ type SecretStoreProvider struct {
 	// +optional
 	OnePassword *OnePasswordProvider `json:"onepassword,omitempty"`
 
+	// OnePassword configures this store to sync secrets using the 1Password Cloud provider
+	// +optional
+	OnePasswordSdk *OnePasswordSdkProvider `json:"onepasswordsdk,omitempty"`
+
 	// Webhook configures this store to sync secrets using a generic templated webhook
 	// +optional
 	Webhook *WebhookProvider `json:"webhook,omitempty"`
