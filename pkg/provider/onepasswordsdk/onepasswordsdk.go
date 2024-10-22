@@ -1,3 +1,16 @@
+/*
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 package onepasswordsdk
 
 import (
@@ -6,12 +19,13 @@ import (
 	"fmt"
 
 	"github.com/1password/onepassword-sdk-go"
-	esv1beta1 "github.com/external-secrets/external-secrets/apis/externalsecrets/v1beta1"
-	"github.com/external-secrets/external-secrets/pkg/utils"
-	"github.com/external-secrets/external-secrets/pkg/utils/resolvers"
 	v1 "k8s.io/api/core/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
+
+	esv1beta1 "github.com/external-secrets/external-secrets/apis/externalsecrets/v1beta1"
+	"github.com/external-secrets/external-secrets/pkg/utils"
+	"github.com/external-secrets/external-secrets/pkg/utils/resolvers"
 )
 
 const (
@@ -95,7 +109,6 @@ func validateStore(store esv1beta1.GenericStore) error {
 	}
 
 	return nil
-
 }
 
 // GetSecret returns a single secret from the provider.
@@ -116,22 +129,32 @@ func (provider *ProviderOnePasswordSdk) Close(_ context.Context) error {
 	return nil
 }
 
-// DeleteSecret Not Implemented
+// DeleteSecret Not Implemented.
 func (provider *ProviderOnePasswordSdk) DeleteSecret(ctx context.Context, remoteRef esv1beta1.PushSecretRemoteRef) error {
 	return fmt.Errorf(errOnePasswordSdkStore, errors.New(errNotImplemented))
 }
 
-// GetAllSecrets implements v1beta1.SecretsClient.
+// GetAllSecrets Not Implemented.
 func (provider *ProviderOnePasswordSdk) GetAllSecrets(ctx context.Context, ref esv1beta1.ExternalSecretFind) (map[string][]byte, error) {
-	panic("unimplemented")
+	return nil, fmt.Errorf(errOnePasswordSdkStore, errors.New(errNotImplemented))
 }
 
 // GetSecretMap implements v1beta1.SecretsClient.
 func (provider *ProviderOnePasswordSdk) GetSecretMap(ctx context.Context, ref esv1beta1.ExternalSecretDataRemoteRef) (map[string][]byte, error) {
-	panic("unimplemented")
+	if ref.Version != "" {
+		return nil, errors.New(errVersionNotImplemented)
+	}
+	// TODO: maybe return an error if the ref.Key is not a valid op url ("op://vault/item/field")
+	secret, err := provider.client.Secrets.Resolve(ctx, ref.Key)
+	if err != nil {
+		return nil, err
+	}
+	secretData := make(map[string][]byte)
+	secretData[ref.Key] = []byte(secret)
+	return secretData, nil
 }
 
-// PushSecret Not Implemented
+// PushSecret Not Implemented.
 func (provider *ProviderOnePasswordSdk) PushSecret(ctx context.Context, secret *v1.Secret, data esv1beta1.PushSecretData) error {
 	return fmt.Errorf(errOnePasswordSdkStore, errors.New(errNotImplemented))
 }
@@ -142,7 +165,7 @@ func (provider *ProviderOnePasswordSdk) SecretExists(ctx context.Context, remote
 }
 
 // Validate checks if the client is configured correctly
-// currently only checks if it is possible to list vaults
+// currently only checks if it is possible to list vaults.
 func (provider *ProviderOnePasswordSdk) Validate() (esv1beta1.ValidationResult, error) {
 	// TODO: maybe try to list a secret
 	// although this may not be ideal, since by getting a secret the an entry is added to the audit log

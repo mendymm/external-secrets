@@ -63,6 +63,7 @@ require github.com/1Password/connect-sdk-go v1.5.3
 
 require (
 	dario.cat/mergo v1.0.1
+	github.com/1password/onepassword-sdk-go v0.1.2
 	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.14.0
 	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.7.0
 	github.com/BeyondTrust/go-client-library-passwordsafe v0.6.0
@@ -104,7 +105,6 @@ require (
 	cloud.google.com/go/auth v0.9.7 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.4 // indirect
 	cloud.google.com/go/compute/metadata v0.5.2 // indirect
-	github.com/1password/onepassword-sdk-go v0.1.2 // indirect
 	github.com/ProtonMail/go-crypto v1.0.0 // indirect
 	github.com/ProtonMail/go-mime v0.0.0-20230322103455-7d82a3887f2f // indirect
 	github.com/ProtonMail/gopenpgp/v2 v2.7.5 // indirect
